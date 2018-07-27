@@ -1,0 +1,14 @@
+DROP DATABASE IF EXISTS bamazon;
+
+CREATE DATABASE bamazon;
+
+USE bamazon;
+
+CREATE TABLE products (
+id INTEGER(10) NOT NULL,
+product VARCHAR(50) NOT NULL,
+department VARCHAR (50) NOT NULL,
+price INTEGER(10) NOT NULL,
+quantity INTEGER(10) DEFAULT 0,
+PRIMARY KEY (item_id)
+);
