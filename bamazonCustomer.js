@@ -44,6 +44,7 @@ function displayInventory() {
             productArr.push(tempArry);
         };
         console.table('\nBamazon Inventory', productArr);
+        console.log("-----------------------------------------------------\n");
         inquireForm();
     });
 }

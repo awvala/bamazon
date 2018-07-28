@@ -6,6 +6,8 @@ const consoleTable = require('console.table');
 // Global variables
 var productArr = [];
 var lowInvArr = [];
+var oldQty;
+var newQty;
 
 // Establish connection to database
 var connection = mysql.createConnection({
@@ -45,20 +47,19 @@ function displayInventory() {
             productArr.push(tempArry);
         };
         console.table('\nBamazon Inventory', productArr);
+        console.log("-----------------------------------------------------\n");
+        productArr = [],
         inquireForm();
     });
 }
 
 //  Show formatted product table where quantity is less than 5
 function lowInventoryReport() {
-    connection.query("SELECT * FROM products WHERE quantity <= 50", function (err, res) {
-        //if (err) throw err;
-        console.log(res.length);
-        if (res.length = 0) {
-            console.log("Good news! Everything is stocked up!");
+    connection.query("SELECT * FROM products WHERE quantity <= 5", function (err, res) {
+        if (err) throw err;
+        if (res.length === 0) {
+            console.log("Good news! Everything is stocked up!\n");
         } else {
-            console.log("Hello");
-            console.log(res);
             for (var i = 0; i < res.length; i++) {
                 var tempArry =
                 {
@@ -68,12 +69,90 @@ function lowInventoryReport() {
                     Price: res[i].price,
                     Qty: res[i].quantity
                 }
-                console.log(tempArry);
                 lowInvArr.push(tempArry);
             }
             console.table('\nBamazon Low Inventory', lowInvArr);
+            console.log("-----------------------------------------------------\n");
+            lowInvArr = [];
         }
         inquireForm();
+    });
+}
+
+// Take input from Manager and add that value to the bamazon database product id
+function addInventory() {
+    inquirer.prompt([
+        {
+            name: "prodID",
+            message: "Type Product ID number to add more inventory"
+        },
+        {
+            name: "quantityValue",
+            message: "Type the amount of inventory you want to add"
+        }
+    ]).then(function (answers) {
+        var productID = answers.prodID;
+        var quantityValue = answers.quantityValue;
+        // Query bamazon database and find row where id = productID
+        connection.query("SELECT * FROM products WHERE id = " + productID,
+            function (err, res) {
+                if (err) throw err;
+                newQty = parseInt(quantityValue) + res[0].quantity;
+                // Update the row's quantity with the calculated newQty value
+                connection.query("UPDATE products SET ? WHERE ?",
+                [
+                  {
+                    quantity: newQty
+                  },
+                  {
+                    id: productID
+                  }
+                ],
+                function (err, res) {
+                    if (err) throw err;
+                    displayInventory();
+            });
+        });
+    });
+}
+
+//  Add new row to bamazon database products table
+function addProduct() {
+    inquirer.prompt([
+        {
+            name: "product",
+            message: "Type the Product Name"
+        },
+        {
+            name: "department",
+            message: "Select a Department",
+            type:  "list",
+            choices:  ["Books", "Computers", "Food", "Office Supplies"]
+        },
+        {
+            name: "price",
+            message: "Enter Price"
+        },
+        {
+            name: "quantity",
+            message: "Enter Quantity"
+        }
+    ]).then(function (answers) {
+        var name = answers.product;
+        var department = answers.department;
+        var price = answers.price;
+        var quantity = answers.quantity;
+        connection.query("INSERT INTO products SET ?",
+            {
+                product: name,
+                department: department,
+                price: price,
+                quantity: quantity,
+            },
+            function (err, res) {
+                if (err) throw err;
+                displayInventory();
+            });
     });
 }
 
@@ -98,10 +177,10 @@ function inquireForm() {
                 lowInventoryReport();
                 break;
             case "Add to Inventory":
-                //updateSong();
+                addInventory();
                 break;
             case "Add New Product":
-                //deleteSong();
+                addProduct();
                 break;
             case "Close Application":
                 console.log("Good bye!");
