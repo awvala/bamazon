@@ -21,32 +21,47 @@ var connection = mysql.createConnection({
     database: "bamazon"
 });
 
+// Establish connection to server
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
     displayInventory();
 });
 
+//  Show formatted products table from the bamazon database
 function displayInventory() {
-        connection.query("SELECT * FROM products", function (err, res) {
+    connection.query("SELECT * FROM products", function (err, res) {
         if (err) throw err;
-          for (var i = 0; i < res.length; i++) {
+        for (var i = 0; i < res.length; i++) {
             var tempArry =
-                {
-                    ID: res[i].id, 
-                    Product: res[i].product,
-                    Department: res[i].department,
-                    Price: res[i].price,
-                    Qty: res[i].quantity
-                }
+            {
+                ID: res[i].id,
+                Product: res[i].product,
+                Department: res[i].department,
+                Price: res[i].price,
+                Qty: res[i].quantity
+            }
             productArr.push(tempArry);
-          };
-          console.table('\nBamazon Inventory', productArr);
-          //console.log("-----------------------------------\n");
-          inquireForm();
-        });
+        };
+        console.table('\nBamazon Inventory', productArr);
+        inquireForm();
+    });
 }
 
+//  Update the products table in the bamazon database and display customer purchase cost
+function makepurchase(itemID, arrayID, itemQty, reqQty) {
+    var newQty = (parseInt(itemQty) - parseInt(reqQty));
+    connection.query("UPDATE products SET quantity = " + newQty + " WHERE id = " + itemID,
+        function (err, res) {
+            if (err) throw err;
+            var cost = (productArr[arrayID].Price*reqQty);
+            console.log("Congrats! You ordered " + reqQty + " " + (productArr[arrayID].Product) + "(s) for $" + cost + ".");
+            connection.end();
+        }
+    )
+}
+
+//  Initial customer order prompt
 function inquireForm() {
     inquirer.prompt([
         {
@@ -61,14 +76,14 @@ function inquireForm() {
         var itemID = answers.productId;
         var arrayID = (parseInt(itemID) - 1);
         var itemQty = productArr[arrayID].Qty;
-        
-        if (answers.quantity > itemQty) {
+        var reqQty = answers.quantity;
+
+        if (reqQty > itemQty) {
             console.log("Insuficient Quantity!");
             productArr = [];
             displayInventory();
         } else {
-            console.log("work to do");
-            connection.end();
+            makepurchase(itemID, arrayID, itemQty, reqQty);
         }
     });
 }
