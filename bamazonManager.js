@@ -42,7 +42,8 @@ function displayInventory() {
                 Product: res[i].product,
                 Department: res[i].department,
                 Price: res[i].price,
-                Qty: res[i].quantity
+                Qty: res[i].quantity,
+                Sales: res[i].sales
             }
             productArr.push(tempArry);
         };
@@ -67,7 +68,8 @@ function lowInventoryReport() {
                     Product: res[i].product,
                     Department: res[i].department,
                     Price: res[i].price,
-                    Qty: res[i].quantity
+                    Qty: res[i].quantity,
+                    Sales: res[i].sales
                 }
                 lowInvArr.push(tempArry);
             }
@@ -136,18 +138,24 @@ function addProduct() {
         {
             name: "quantity",
             message: "Enter Quantity"
+        },
+        {
+            name: "sales",
+            message: "Enter Sales"
         }
     ]).then(function (answers) {
         var name = answers.product;
         var department = answers.department;
         var price = answers.price;
         var quantity = answers.quantity;
+        var sales = answers.sales;
         connection.query("INSERT INTO products SET ?",
             {
                 product: name,
                 department: department,
                 price: price,
                 quantity: quantity,
+                sales: sales
             },
             function (err, res) {
                 if (err) throw err;
