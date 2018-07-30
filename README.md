@@ -7,6 +7,8 @@ Node.js &amp; MySQL class project
 + Node.js
 + Git Bash
 
+GitHub link:  https://github.com/awvala/bamazon 
+
 
 ##Homework Instructions
 
