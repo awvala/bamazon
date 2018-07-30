@@ -39,7 +39,8 @@ function displayInventory() {
                 Product: res[i].product,
                 Department: res[i].department,
                 Price: res[i].price,
-                Qty: res[i].quantity
+                Qty: res[i].quantity,
+                Sales: res[i].sales
             }
             productArr.push(tempArry);
         };
@@ -50,16 +51,25 @@ function displayInventory() {
 }
 
 //  Update the products table in the bamazon database and display customer purchase cost
-function makepurchase(itemID, arrayID, itemQty, reqQty) {
+function makepurchase(itemID, arrayID, itemQty, reqQty, cost) {
     var newQty = (parseInt(itemQty) - parseInt(reqQty));
-    connection.query("UPDATE products SET quantity = " + newQty + " WHERE id = " + itemID,
+    var newProdSales = (parseInt(productArr[arrayID].Sales) + parseInt(cost));
+    console.log(newProdSales);
+    connection.query("UPDATE products SET ?, ? WHERE id = " + itemID,
+    [
+        {
+            quantity: newQty
+        },
+        {
+            sales: newProdSales
+        }
+    ],
         function (err, res) {
             if (err) throw err;
-            var cost = (productArr[arrayID].Price*reqQty);
+            //var cost = (productArr[arrayID].price*reqQty);
             console.log("Congrats! You ordered " + reqQty + " " + (productArr[arrayID].Product) + "(s) for $" + cost + ".");
             connection.end();
-        }
-    )
+        });
 }
 
 //  Initial customer order prompt
@@ -84,7 +94,8 @@ function inquireForm() {
             productArr = [];
             displayInventory();
         } else {
-            makepurchase(itemID, arrayID, itemQty, reqQty);
+            var cost = (productArr[arrayID].Price*reqQty);
+            makepurchase(itemID, arrayID, itemQty, reqQty, cost);
         }
     });
 }
