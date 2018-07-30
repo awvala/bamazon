@@ -10,7 +10,7 @@ Node.js &amp; MySQL class project
 GitHub link:  https://github.com/awvala/bamazon 
 
 
-##Homework Instructions
+# Homework Instructions
 
 Node.js & MySQL
 
