@@ -54,7 +54,7 @@ function displayInventory() {
 function makepurchase(itemID, arrayID, itemQty, reqQty, cost) {
     var newQty = (parseInt(itemQty) - parseInt(reqQty));
     var newProdSales = (parseInt(productArr[arrayID].Sales) + parseInt(cost));
-    console.log(newProdSales);
+    
     connection.query("UPDATE products SET ?, ? WHERE id = " + itemID,
     [
         {
