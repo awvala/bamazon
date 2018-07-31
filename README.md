@@ -8,6 +8,7 @@ Node.js &amp; MySQL class project
 + Git Bash
 
 GitHub link:  https://github.com/awvala/bamazon 
+
 Demo Video: https://github.com/awvala/bamazon/blob/master/awvala_bamazon_nodeDemo_vid.webm 
 
 
